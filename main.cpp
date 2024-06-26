@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 
 int main() {
-    //Raw Data
+    //region create fake Raw Data
     cv::Mat P = (cv::Mat_<float>(3,2) << 0,0,
                                          0,10,
                                          5,0);
@@ -16,7 +16,9 @@ int main() {
     for(int i=0; i<S.rows; i++){
         std::cout << "\t" << S.row(i) << std::endl;
     }
+    //endregion
 
+    //region Solve for Pupil to Screen Mapping
     //Prepare to Solve for Model: Sx = Px*mxx + Py*myx + Bxx + Byx
     //Create f vector:
     cv::Mat f  = S.col(0);
@@ -33,8 +35,9 @@ int main() {
     std::cout <<  "\t[mxx, myx, Bx]: " << cx << std::endl;
     cv::solve(A, S.col(1), cy, cv::DECOMP_SVD);
     std::cout <<  "\t[mxy, myy, By]: " << cy << std::endl;
+    //endregion
 
-    //Test The Model:
+    //region Map from Pupil to Screen coordinates:
     std::cout << "Test Case" << std::endl;
     cv::Mat p = (cv::Mat_<float>(1, 3) << 10,0,1);
     std::cout << "\tPupil Point = " << p(cv::Rect(0,0,2,1)) << std::endl;
@@ -42,4 +45,5 @@ int main() {
     std::cout << "\tScreen Point= [" << Sx.at<float>(0) << ", ";
     cv::Mat Sy = p * cy;
     std::cout << Sy.at<float>(0) << "]" << std::endl;
+    //endregion
 }
